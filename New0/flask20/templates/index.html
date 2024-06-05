@@ -1,0 +1,128 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Flask-SocketIO Test</title>
+   <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.min.js"></script>
+   <script type="text/javascript" charset="utf-8">
+     $(document).ready(function() {
+      namespace = '/test';
+      var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+
+      socket.on('connect', function() {
+        socket.emit('my_event', {data: 'I\'m connected!', value: 1}); });
+
+      socket.on('my_response', function(msg) {
+        console.log(msg.binary_data);
+        $('#log').append('Received #'+msg.count+'Stav rampy: '+msg.binary_data+': Distance: ' + msg.distance + ', Flame Value: ' + msg.flameValue + '<br>').html(); });
+
+      $('form#emit').submit(function(event) {
+          socket.emit('my_event', {value: $('#emit_value').val()});
+          return false; });
+      $('#buttonVal').click(function(event) {
+          //console.log($('#buttonVal').val());
+          socket.emit('click_event', {value: $('#buttonVal').val()});
+          return false; });
+          
+      $('form#start').submit(function(event) {
+          socket.emit('start_generation');
+          generation=true;
+          return false; });
+          
+      $('form#stop').submit(function(event) {
+          socket.emit('stop_generation');
+          generation=false;
+          return false; });
+          
+      $('form#disconnect').submit(function(event) {
+          socket.emit('disconnect_request');
+          return false; });         
+      });
+    </script>
+    <style>
+  body {
+   font-family: Arial, sans-serif;
+   margin: 0;
+   padding: 0;
+  }
+  
+  h1 {
+   text-align: center;
+   margin-top: 50px;
+  }
+  
+  .button-container {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   margin-top: 50px;
+  }
+  
+  .button-container button {
+   margin: 0 10px;
+   padding: 10px 20px;
+   font-size: 20px;
+   border-radius: 5px;
+   border: none;
+   color: blue;
+   cursor: pointer;
+   transition: background-color 0.3s ease;
+  }
+  
+  .button-container button#start {
+   background-color: #4CAF50;
+  }
+  
+  .button-container button#stop {
+   background-color: #F44336;
+  }
+  
+  .button-container button#disconnect {
+   background-color: #333;
+   color: blue;
+  }
+  
+  .button-container button:hover {
+   background-color: #555;
+   color: blue;
+  }
+  
+  #plotdiv {
+   width: 600px;
+   height: 400px;
+  }
+  
+  #log {
+   margin-top: 50px;
+   padding: 10px;
+   border: 1px solid #ccc;
+  }
+ </style>
+</head>
+<body>
+ <h1>Stav parkoviska podzemnej garáže</h1>
+<div class="button-container">
+  <form id="start" method="POST" action="#">
+   <button type="submit">Start</button>
+  </form>
+  <form id="stop" method="POST" action="#">
+   <button type="submit">Stop</button>
+  </form>
+  <form id="disconnect" method="POST" action="#">
+   <button type="submit">Disconnect</button>
+  </form>
+</div>
+<div class="button-container">
+  <button id="graphButton" onclick="window.location.href='/graphlive'">Graph</button>
+  <button id="gaugeButton" onclick="window.location.href='/gauge'">Gauge</button>
+  <button id="fileButton" onclick="window.location.href='/read'">File</button>
+  <button id="databaseButton" onclick="window.location.href='/db'">Database</button>
+  <button id="fileLastButton" onclick="window.location.href='/read/last'">CurrentFile</button>
+  <button id="databaseLastButton" onclick="window.location.href='/db/last'">CurrentDatabase</button>
+  <button id="fileGraphButton" onclick="window.location.href='/graph'">GraphFile</button>
+ </div>
+ 
+ <h2>Receive:</h2>
+ <div id="log"></div>
+</body>
+</html>

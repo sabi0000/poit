@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>POIT'2019</title>
+    <style type="text/css">           
+    </style>
+    <script src="static/libs/jquery-1.11.1.min.js"></script>
+    <script src="static/libs/plotly-latest.min.js"></script>
+
+  <script>
+   $(document).ready(function(){
+    var layout = {
+          title: 'Output variable',
+          xaxis: {
+            title: 'time',
+            range: [0,30]
+          },
+          yaxis: {
+            title: 'ys(t)',
+            range: [0,300]
+          }
+        };
+
+    
+$.ajax({
+    type: "GET",
+    url: "/read/last",
+    success: function(data) {
+        console.log(data);
+        data = JSON.parse(data);
+        console.log(data);
+        let n = data.length;
+        console.log(n);
+
+        let sinxData = [];
+        let cosxData = [];
+        let countData = [];
+
+        for (let i = 0; i < n; i++) {
+            sinxData.push(data[i].Vzdialenost);
+            cosxData.push(data[i].StavPlamena);
+            countData.push(data[i].countx);
+        }
+
+        let trace1 = {
+            x: countData,
+            y: sinxData,
+            mode: 'lines',
+            name: 'Vzdialenost od rampy'
+        };
+
+        let trace2 = {
+            x: countData,
+            y: cosxData,
+            mode: 'lines',
+            name: 'Detekcia plamena'
+        };
+
+        let layout = {
+            title: 'Stav parkoviska',
+            xaxis: {
+                title: 'Count'
+            },
+            yaxis: {
+                title: 'Values'
+            }
+        };
+
+        Plotly.newPlot($('#plotdiv')[0], [trace1, trace2], layout);
+    }
+    }).done(function( o ) {
+       // do something
+    });    
+   });   
+
+  </script>
+</head>
+<body>
+ 
+    <div id="plotdiv" style="width:900px;height:400px;"></div>
+      
+</body>
+</html> 
